@@ -5,7 +5,7 @@ export abstract class DomainError extends Error {
     this.name = this.constructor.name;
     this.statusCode = statusCode;
     Error.captureStackTrace(this, this.constructor);
-    Object.setPrototypeOf(this, DomainError.prototype);
+    Object.setPrototypeOf(this,  new.target.prototype);
   }
 }
  export class EmailAlreadyExistError extends DomainError {

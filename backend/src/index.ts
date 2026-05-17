@@ -1,6 +1,6 @@
+import "reflect-metadata";
 import dotenv from "dotenv";
 dotenv.config({ path: ".env" });
-import "reflect-metadata";
 import { AppConfig } from "./config/AppConfig.js";
 import { UserRepository } from "./repositories/UserRepository.js";
 import { HashService } from "./services/HashService.js";
