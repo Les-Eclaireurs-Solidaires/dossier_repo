@@ -1,11 +1,10 @@
-import dotenv from "dotenv";
-dotenv.config({ path: ".env" });
-
 import cookieParser from "cookie-parser";
 import express, { type Express } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import type { Server } from "http";
+import { CorsError } from "./AppError.js";
+import { errorHandler } from "../middlewares/ErrorMiddleware.js";
 
 export class AppConfig {
   private app: Express;
@@ -39,7 +38,7 @@ export class AppConfig {
           if (!origin || allowed.includes(origin)) {
             callback(null, true);
           } else {
-            callback(new Error("Not allowed by CORS"));
+            callback(new CorsError());
           }
         },
         credentials: true,
@@ -57,7 +56,9 @@ export class AppConfig {
     });
   }
 
-  private initializeErrorHandling() {}
+  private initializeErrorHandling() {
+    this.app.use(errorHandler);
+  }
 
   public listen() {
     this.server = this.app.listen(this.port, this.host, () => {
