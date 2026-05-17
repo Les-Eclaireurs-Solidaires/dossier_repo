@@ -1,0 +1,96 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Éclaireurs Solidaires",
+    "version": "1.0.0",
+    "description": "Documentation officielle de l'API REST pour la plateforme Éclaireurs Solidaires."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Serveur de développement local"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Inscription d'un nouvel utilisateur avec choix du rôle",
+        "tags": ["Authentification"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "role"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "volontaire@test.com",
+                    "description": "Adresse email unique de l'utilisateur (sera nettoyée de ses espaces)."
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 255,
+                    "example": "MonMotDePasseFort123!",
+                    "description": "Mot de passe sécurisé (minimum 6 caractères, sans espaces)."
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": ["VOLUNTEER", "ORGANIZER"],
+                    "example": "VOLUNTEER",
+                    "description": "Le rôle affecté à l'utilisateur lors de son inscription."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Utilisateur créé avec succès. Renvoie l'objet utilisateur sécurisé. Les cookies HTTP-Only (accessToken et refreshToken) ainsi que le cookie XSRF-TOKEN sont injectés dans la réponse.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uuid": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "a6b8c1d2-e3f4-5678-90ab-cdef12345678"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "volontaire@test.com"
+                    },
+                    "role": {
+                      "type": "string",
+                      "example": "VOLUNTEER"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur de validation des données d'entrée (class-validator). Renvoie un tableau des contraintes violées via le DtoValidationError."
+          },
+          "401": {
+            "description": "Non autorisé : Rejeté par le service de sécurité (ex: rôle non reconnu lors de la génération du token). Renvoie une UnauthenticatedError."
+          },
+          "403": {
+            "description": "Erreur de sécurité CORS ou restriction d'accès (CorsError)."
+          },
+          "409": {
+            "description": "Conflit : L'adresse email fournie est déjà enregistrée dans le système (EmailAlreadyExistError)."
+          },
+          "500": {
+            "description": "Erreur interne du serveur. Levée en cas de mauvaise configuration des variables d'environnement (EnvironmentVariableError) ou de panne de la base de données."
+          }
+        }
+      }
+    }
+  }
+}
