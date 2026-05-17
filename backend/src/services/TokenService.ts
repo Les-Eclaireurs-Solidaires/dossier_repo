@@ -1,5 +1,5 @@
 import type ms from "ms";
-import { UnauthenticatedError } from "../config/AppError.js";
+import { UnauthenticatedError } from "../exceptions/AppError.js";
 import type { ITokenService } from "../models/authentication/interfaces/ITokenService.js";
 import type { TokenPayload } from "../models/authentication/interfaces/TokenPayload.js";
 import { UserRole } from "../models/user/UserRoleEnum.js";
@@ -36,6 +36,7 @@ export class TokenService implements ITokenService {
     this.accessExpiresIn = JWT_ACCESS_EXPIRES_IN;
     this.refreshExpiresIn = JWT_REFRESH_EXPIRES_IN;
   }
+
   generateAccessToken(payload: TokenPayload): string {
     if (!Object.values(UserRole).includes(payload.role))
       throw new UnauthenticatedError();

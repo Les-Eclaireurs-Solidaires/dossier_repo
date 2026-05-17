@@ -1,6 +1,9 @@
-
-import mysql, { PoolConnection, type Pool, type PoolOptions } from "mysql2/promise";
-import { EnvironmentVariableError } from "./AppError.js";
+import mysql, {
+  PoolConnection,
+  type Pool,
+  type PoolOptions,
+} from "mysql2/promise";
+import { EnvironmentVariableError } from "../exceptions/AppError.js";
 
 export class Database {
   private static instance: Database;
@@ -10,7 +13,9 @@ export class Database {
     const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
 
     if (!DB_HOST || !DB_USER || !DB_PASSWORD || !DB_NAME) {
-      throw new EnvironmentVariableError("FATAL ERROR: Variables d'environnement de base de données manquantes dans le fichier .env !");
+      throw new EnvironmentVariableError(
+        "FATAL ERROR: Variables d'environnement de base de données manquantes dans le fichier .env !",
+      );
     }
     const access: PoolOptions = {
       host: DB_HOST,
@@ -41,5 +46,4 @@ export class Database {
   public async getConnection(): Promise<PoolConnection> {
     return await this.pool.getConnection();
   }
-
 }

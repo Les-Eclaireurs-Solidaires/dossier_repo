@@ -2,10 +2,9 @@ import type { IUserRepository } from "../interfaces/IUserRepository.js";
 import type { AuthResponse } from "../models/authentication/interfaces/AuthResponse.js";
 import type { IHashService } from "../models/authentication/interfaces/IHashService.js";
 import type { ITokenService } from "../models/authentication/interfaces/ITokenService.js";
-import { EmailAlreadyExistError } from "../models/exceptions/DomainError.js";
+import { EmailAlreadyExistError } from "../exceptions/DomainError.js";
 import { User } from "../models/user/User.js";
 import { UserRole } from "../models/user/UserRoleEnum.js";
-
 
 export class AuthService {
   constructor(
@@ -13,7 +12,11 @@ export class AuthService {
     private hashService: IHashService,
     private tokenService: ITokenService,
   ) {}
-  public async register(email: string, password: string, role: UserRole): Promise<AuthResponse> {
+  public async register(
+    email: string,
+    password: string,
+    role: UserRole,
+  ): Promise<AuthResponse> {
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       throw new EmailAlreadyExistError(email);

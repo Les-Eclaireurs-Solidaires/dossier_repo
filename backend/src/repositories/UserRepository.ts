@@ -1,6 +1,11 @@
-import type { Pool, PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import type {
+  Pool,
+  PoolConnection,
+  ResultSetHeader,
+  RowDataPacket,
+} from "mysql2/promise";
 import { City } from "../models/city/City.js";
-import { EmailAlreadyExistError } from "../models/exceptions/DomainError.js";
+import { EmailAlreadyExistError } from "../exceptions/DomainError.js";
 import { User } from "../models/user/User.js";
 import type { IUserRepository } from "../interfaces/IUserRepository.js";
 

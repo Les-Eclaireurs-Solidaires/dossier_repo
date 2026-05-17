@@ -1,7 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { DomainError } from "../models/exceptions/DomainError.js";
-import { AppError, DtoValidationError } from "../config/AppError.js";
-
+import { DomainError } from "../exceptions/DomainError.js";
+import { AppError, DtoValidationError } from "../exceptions/AppError.js";
 
 export const errorHandler = (
   err: Error,
@@ -9,7 +8,6 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  
   if (err instanceof DomainError || err instanceof AppError) {
     const payload: {
       message: string;

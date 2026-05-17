@@ -1,4 +1,7 @@
-import { CityNotEmptyError, ZipNotEmptyError } from "../exceptions/DomainError.js";
+import {
+  CityNotEmptyError,
+  ZipNotEmptyError,
+} from "../../exceptions/DomainError.js";
 
 export class City {
   private id: number | null;

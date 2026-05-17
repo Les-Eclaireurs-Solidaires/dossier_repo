@@ -1,5 +1,9 @@
 import { City } from "../city/City.js";
-import { UserEmailError, UserPasswordError, UserRoleError } from "../exceptions/DomainError.js";
+import {
+  UserEmailError,
+  UserPasswordError,
+  UserRoleError,
+} from "../../exceptions/DomainError.js";
 import type { UserParam } from "./UserParam.js";
 import type { UserRole } from "./UserRoleEnum.js";
 

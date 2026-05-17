@@ -1,8 +1,7 @@
 import { plainToInstance, type ClassConstructor } from "class-transformer";
 import { validate } from "class-validator";
-import type { NextFunction, Request, Response} from "express";
-import { DtoValidationError } from "../config/AppError.js";
-
+import type { NextFunction, Request, Response } from "express";
+import { DtoValidationError } from "../exceptions/AppError.js";
 
 export function validateBody<T extends object>(dtoClass: ClassConstructor<T>) {
   return async (req: Request, res: Response, next: NextFunction) => {
