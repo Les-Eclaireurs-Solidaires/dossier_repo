@@ -38,6 +38,7 @@ docker-compose up --build
 ### Accès locaux
 - Frontend (Angular) : http://localhost:4200
 - Backend (API REST) : http://localhost:3000/api
+- Documentation API (Swagger) : http://localhost:3000/api-docs
 - Interface Base de donnée (phpMyAdmin) : http://localhost:8080
 
 ### Architecture
@@ -45,10 +46,31 @@ docker-compose up --build
 - /frontend : Client Angular
 - /db : Scripts d'initialisation de la base de données
 - .github/workflows : Pipeline d'Intégration Continue 
-  - Backend CI Pipeline : Vérification TypeScript à chaque push sur main 
+  - Backend CI Pipeline : Analyse de conformité TypeScript et exécution automatisée des tests unitaires (Vitest) à chaque push sur `main` et sur les branches de fonctionnalités (`feature/*`) 
 
-### Routes Exposées
-*Documentation de l'API à venir (Swagger)*
-- GET /api : route de test de santé de l'API
-- GET /api/missions : Récupérer la liste des missions
-- GET /api/missions/:id : Récupérer le détail d'une mission
+## 📖 Documentation de l'API (Contrat d'interface)
+
+L'API est entièrement documentée en respectant la spécification **OpenAPI 3.0**. 
+Lorsque les conteneurs Docker sont démarrés, la documentation interactive Swagger UI est accessible sur :
+**http://localhost:3000/api-docs**
+
+Elle permet de consulter :
+- Les points d'entrée (Endpoints) disponibles (ex: `/auth/register`).
+- Les structures de données attendues (DTOs) et les formats de validation (`class-validator`).
+- Le cycle complet des réponses HTTP (200 OK, 400 Bad Request, 401 Unauthenticated, 409 Conflict, 500 Server Error).
+
+## Stratégie de Test
+La logique métier est protégée par des tests unitaires isolés (Vitest).  
+Cette approche garantit la stabilité des règles applicatives sans dépendre d'une base de données active grâce au Mocking
+des dépôts.
+
+### Exécution des tests (Vitest)
+- **En Local**
+```
+cd backend
+npm run test
+```
+- **Dans l'environnement Docker**
+```
+docker-compose exec backend npm run test -- --run
+```
