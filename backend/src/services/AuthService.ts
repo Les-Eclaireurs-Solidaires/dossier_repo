@@ -13,7 +13,7 @@ export class AuthService {
     private hashService: IHashService,
     private tokenService: ITokenService,
   ) {}
-  public async register(email: string, password: string): Promise<AuthResponse> {
+  public async register(email: string, password: string, role: UserRole): Promise<AuthResponse> {
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       throw new EmailAlreadyExistError(email);
@@ -27,7 +27,7 @@ export class AuthService {
       null,
       null,
       null,
-      UserRole.VOLUNTEER,
+      role,
     );
 
     const accessToken: string = this.tokenService.generateAccessToken({

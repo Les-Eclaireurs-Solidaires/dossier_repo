@@ -1,5 +1,12 @@
 import { Transform } from "class-transformer";
-import { IsEmail, MaxLength, MinLength, NotContains } from "class-validator";
+import {
+  IsEmail,
+  IsEnum,
+  MaxLength,
+  MinLength,
+  NotContains,
+} from "class-validator";
+import { UserRole } from "../../models/user/UserRoleEnum.js";
 
 export class RegisterDTO {
   @IsEmail({}, { message: "L'adresse email n'est pas valide." })
@@ -18,4 +25,6 @@ export class RegisterDTO {
     message: "Le mot de passe ne doit pas contenir d'espaces.",
   })
   password!: string;
+  @IsEnum(UserRole, { message: "Le rôle n'est pas valide." })
+  role!: UserRole;
 }

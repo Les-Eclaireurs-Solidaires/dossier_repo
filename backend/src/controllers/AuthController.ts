@@ -38,6 +38,7 @@ export class AuthController {
     const result = await this.authService.register(
       registerDto.email,
       registerDto.password,
+      registerDto.role,
     );
 
     this.generateSecurityCookie(res, result);
