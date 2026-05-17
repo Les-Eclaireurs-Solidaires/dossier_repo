@@ -1,0 +1,50 @@
+services:
+  mysql:
+    image: mysql:9.0
+    container_name: eclaireurs-db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d:ro
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - eclaireurs-network
+
+  backend:
+    build:
+      context: ./backend
+      target: production
+    container_name: eclaireurs-backend
+    env_file:
+      - ./backend/.env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - eclaireurs-network
+
+  frontend:
+    build:
+      context: ./frontend
+      target: production
+    container_name: eclaireurs-frontend
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - backend
+    networks:
+      - eclaireurs-network
+
+networks:
+  eclaireurs-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
