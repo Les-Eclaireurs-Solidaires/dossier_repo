@@ -5,7 +5,7 @@ import type {
   RowDataPacket,
 } from "mysql2/promise";
 import { City } from "../models/city/City.js";
-import { EmailAlreadyExistError } from "../exceptions/DomainError.js";
+import { EmailAlreadyExistError, UserNotFoundError } from "../exceptions/DomainError.js";
 import { User } from "../models/user/User.js";
 import type { IUserRepository } from "../interfaces/IUserRepository.js";
 
@@ -158,5 +158,36 @@ export class UserRepository implements IUserRepository {
       }
       throw error;
     }
+  }
+
+  async updateUser(user: User): Promise<User> {
+    const query = `UPDATE \`user\` 
+                    SET 
+                      user_email = ?, 
+                      user_password = ?, 
+                      user_refresh_token = ?, 
+                      user_firstname = ?, 
+                      user_lastname = ?, 
+                      user_avatar = ?, 
+                      user_updated_at = ?, 
+                      id_city = ?, 
+                      id_role = ? 
+                    WHERE user_uuid = ?`;
+
+    const values = [
+      user.getEmail(),
+      user.getPassword(),
+      user.getRefreshToken(),
+      user.getFirstName(),
+      user.getLastName(),
+      user.getAvatarUrl(),
+      user.getUpdatedAt(),
+      user.getCity() ? user.getCity()!.getId() : null,
+      user.getRole(),
+      user.getUuid(),
+    ];
+    const [result] = await this.db.execute<ResultSetHeader>(query, values);
+    if (result.affectedRows === 0) throw new UserNotFoundError();
+    return user;
   }
 }

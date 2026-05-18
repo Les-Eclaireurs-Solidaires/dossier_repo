@@ -38,3 +38,13 @@ export class ZipNotEmptyError extends DomainError {
     super("Le code postal ne peut pas être vide.");
   }
 } 
+export class UserCredentialsError extends DomainError {
+  constructor() {
+    super("Email ou mot de passe incorrect", 403);
+  }
+}
+export class UserNotFoundError extends DomainError {
+  constructor() {
+    super("Utilisateur introuvable", 404);
+  }
+}

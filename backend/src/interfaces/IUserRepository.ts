@@ -9,4 +9,5 @@ export interface IUserRepository {
     lock?: boolean,
   ): Promise<User | null>;
   insertUser(user: User): Promise<User>;
+  updateUser(user: User): Promise<User>;
 }

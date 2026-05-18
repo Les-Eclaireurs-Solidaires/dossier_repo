@@ -34,3 +34,8 @@ export class UnauthenticatedError extends AppError {
     super("Token manquant, expiré ou invalide.", 401);
   }
 }
+export class CSRFError extends AppError {
+  constructor() {
+    super(`Erreur de protection CSRF.`, 403);
+  }
+}
