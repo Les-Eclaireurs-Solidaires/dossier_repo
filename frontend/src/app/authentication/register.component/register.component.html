@@ -1,0 +1,56 @@
+<article class="card-register">
+  <header class="card-register-header">
+    <h1 class="card-title">Je souhaite devenir {{ currentRole() }}</h1>
+    <p class="card-subtitle">Les champs marqués d'un * sont obligatoires</p>
+  </header>
+
+  <main class="card-register-content">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      
+      <div class="form-inputs">
+        <div class="form-field">
+          <input formControlName="email" type="email" placeholder="Email *" />
+          @if (registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
+            <span class="error-message">L'adresse email est obligatoire.</span>
+          }
+          @if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched) {
+            <span class="error-message">Le format de l'email est invalide.</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <input formControlName="password" type="password" placeholder="Password *" />
+          @if (registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched) {
+            <span class="error-message">Le mot de passe est obligatoire.</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <input formControlName="confirmPassword" type="password" placeholder="Confirm Password *" />
+          @if (registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched) {
+            <span class="error-message">La confirmation du mot de passe est obligatoire.</span>
+          }
+          @if (registerForm.hasError('fieldsMismatch') && registerForm.get('confirmPassword')?.touched) {
+            <span class="error-message">Les mots de passe ne correspondent pas.</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-checkbox">
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="cgu" formControlName="acceptTerms" />
+          <label for="cgu">J'ai lu et j'accepte les Conditions Générales</label>
+        </div>
+        @if (registerForm.get('acceptTerms')?.hasError('required') && registerForm.get('acceptTerms')?.touched) {
+          <span class="error-message">Vous devez accepter les conditions pour continuer.</span>
+        }
+      </div>
+
+      <div class="card-register-actions">
+        <button type="submit" class="btn-primary" [disabled]="registerForm.invalid">
+          Créer mon Espace {{ currentRole() }}
+        </button>
+      </div>
+    </form>
+  </main>
+</article>
