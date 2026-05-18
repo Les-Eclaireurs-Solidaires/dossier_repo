@@ -60,7 +60,6 @@ describe("AuthService", () => {
     });
 
     it("should throw an EmailAlreadyExistError if the email already exists", async () => {
-      // GIVEN
       mockUserRepository.findByEmail.mockResolvedValue({
         uuid: "123",
         email: "deja@pris.com",

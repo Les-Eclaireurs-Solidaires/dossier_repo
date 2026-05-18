@@ -25,6 +25,12 @@ export class RegisterDTO {
     message: "Le mot de passe ne doit pas contenir d'espaces.",
   })
   password!: string;
+  @Transform(({ value }) => {
+    if (typeof value === "string") {
+      return UserRole[value as keyof typeof UserRole] ?? value;
+    }
+    return value;
+  })
   @IsEnum(UserRole, { message: "Le rôle n'est pas valide." })
   role!: UserRole;
 }
