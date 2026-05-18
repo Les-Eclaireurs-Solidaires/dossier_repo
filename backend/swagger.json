@@ -16,6 +16,7 @@
       "post": {
         "summary": "Inscription d'un nouvel utilisateur avec choix du rôle",
         "tags": ["Authentification"],
+        "security": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -51,6 +52,14 @@
         "responses": {
           "200": {
             "description": "Utilisateur créé avec succès. Renvoie l'objet utilisateur sécurisé. Les cookies HTTP-Only (accessToken et refreshToken) ainsi que le cookie XSRF-TOKEN sont injectés dans la réponse.",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Contient les jetons accessToken, refreshToken (HttpOnly) et XSRF-TOKEN.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -88,6 +97,176 @@
           },
           "500": {
             "description": "Erreur interne du serveur. Levée en cas de mauvaise configuration des variables d'environnement (EnvironmentVariableError) ou de panne de la base de données."
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Connexion d'un utilisateur existant",
+        "tags": ["Authentification"],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "volontaire@test.com",
+                    "description": "Adresse email de l'utilisateur"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "MonMotDePasseFort123!",
+                    "description": "Mot de passe sécurisé."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Connexion réussie. Renvoie les informations de base de l'utilisateur et injecte les jetons de session en cookies.",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Contient les jetons accessToken, refreshToken (HttpOnly) et XSRF-TOKEN.",
+                "schema": { "type": "string" }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uuid": {
+                      "type": "string",
+                      "example": "a6b8c1d2-e3f4-5678-90ab-cdef12345678"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "volontaire@test.com"
+                    },
+                    "role": { "type": "string", "example": "VOLUNTEER" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur de validation (ex: format email invalide)."
+          },
+          "401": {
+            "description": "Identifiants invalides (UserCredentialsError)."
+          },
+          "500": {
+            "description": "Erreur interne du serveur."
+          }
+        }
+      }
+    },"/auth/logout": {
+      "post": {
+        "summary": "Déconnexion de l'utilisateur",
+        "description": "Révoque le refresh token en base de données et demande au navigateur de supprimer les cookies de session.",
+        "tags": ["Authentification"],
+        "responses": {
+          "200": {
+            "description": "Déconnexion réussie. Les cookies sont purgés côté client.",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Instructions d'effacement des cookies (Max-Age=0).",
+                "schema": { "type": "string" }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "User logged out" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé : L'utilisateur n'est pas connecté ou le jeton est invalide."
+          }
+        }
+      }
+    },"/auth/me": {
+      "get": {
+        "summary": "Récupérer le profil de l'utilisateur connecté",
+        "description": "Utilise l'accessToken stocké dans les cookies pour identifier l'utilisateur et renvoyer son profil complet.",
+        "tags": ["Authentification", "Profil"],
+        "responses": {
+          "200": {
+            "description": "Profil récupéré avec succès.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uuid": { "type": "string", "example": "a6b8c1d2-e3f4-5678-90ab-cdef12345678" },
+                    "email": { "type": "string", "example": "volontaire@test.com" },
+                    "firstName": { "type": "string", "nullable": true, "example": "Pascal" },
+                    "lastName": { "type": "string", "nullable": true, "example": "Jusselme" },
+                    "avatarUrl": { "type": "string", "nullable": true, "example": "/uploads/avatars/default.png" },
+                    "createdAt": { "type": "string", "format": "date-time" },
+                    "updatedAt": { "type": "string", "format": "date-time", "nullable": true },
+                    "city": { "type": "object", "nullable": true, "description": "Objet City hydraté" },
+                    "role": { "type": "string", "example": "VOLUNTEER" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé : Access token manquant ou expiré."
+          },
+          "404": {
+            "description": "Utilisateur introuvable en base de données (UserNotFoundError)."
+          }
+        }
+      }
+    },"/auth/refresh": {
+      "post": {
+        "summary": "Rafraîchir les jetons de session",
+        "description": "Vérifie le refreshToken présent dans les cookies, le compare avec la base de données, et génère une nouvelle paire de jetons si valide.",
+        "tags": ["Authentification"],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Jetons rafraîchis avec succès. Injecte les nouveaux cookies.",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Nouveaux jetons accessToken, refreshToken et XSRF-TOKEN.",
+                "schema": { "type": "string" }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uuid": { "type": "string", "example": "a6b8c1d2-e3f4-5678-90ab-cdef12345678" },
+                    "email": { "type": "string", "example": "volontaire@test.com" },
+                    "role": { "type": "string", "example": "VOLUNTEER" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié : Refresh token manquant, expiré, ou compromis (vol de token détecté)."
+          },
+          "404": {
+            "description": "Utilisateur introuvable."
           }
         }
       }
