@@ -37,8 +37,10 @@ export class AppConfig {
   private initializeMiddlewares() {
     const limiter = rateLimit({
       windowMs: 15 * 60 * 1000,
-      limit: 100,
+      limit: 2000,
     });
+    // Confiance au proxy 
+    this.app.set('trust proxy', 1);
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(helmet());
@@ -67,6 +69,10 @@ export class AppConfig {
   }
 
   private initializeRoutes() {
+    const authLimiter = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      limit: 10,
+    });
     this.app.get("/api", (req, res) => {
       res.json({ message: "Hello les Eclaireurs !" });
     });
@@ -75,7 +81,7 @@ export class AppConfig {
       swaggerUi.serve,
       swaggerUi.setup(this.swaggerDocument),
     );
-    this.app.use("/auth", this.authController.getRouter());
+    this.app.use("/auth", authLimiter, this.authController.getRouter());
   }
 
   private initializeErrorHandling() {
