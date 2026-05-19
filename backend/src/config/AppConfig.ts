@@ -9,6 +9,7 @@ import { errorHandler } from "../middlewares/ErrorMiddleware.js";
 import path from "node:path";
 import fs from "node:fs";
 import type { AuthController } from "../controllers/AuthController.js";
+import rateLimit from "express-rate-limit";
 
 export class AppConfig {
   private app: Express;
@@ -34,6 +35,10 @@ export class AppConfig {
   }
 
   private initializeMiddlewares() {
+    const limiter = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      limit: 100,
+    });
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(helmet());
@@ -57,6 +62,7 @@ export class AppConfig {
         exposedHeaders: ["X-XSRF-TOKEN"],
       }),
     );
+    this.app.use(limiter);
     this.app.use(cookieParser());
   }
 
