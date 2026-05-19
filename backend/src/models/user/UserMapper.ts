@@ -16,6 +16,8 @@ export class UserMapper {
       deletedAt: raw.deletedAt,
       city: CityMapper.toDomain(raw),
       role: raw.roleId,
+      resetPasswordToken: raw.resetPasswordToken,
+      resetPasswordExpiresAt: raw.resetPasswordExpiresAt,
     });
   }
   static toProfile(user: User): any {

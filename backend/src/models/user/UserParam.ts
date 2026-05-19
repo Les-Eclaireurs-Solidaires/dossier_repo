@@ -13,6 +13,8 @@ export interface UserParam {
   createdAt: Date;
   updatedAt: Date | null;
   deletedAt: Date | null;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiresAt?: Date | null;
   city: City | null;
   role: UserRole;
 }

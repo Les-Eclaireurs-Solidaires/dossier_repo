@@ -20,6 +20,8 @@ export class User {
   private deletedAt: Date | null;
   private city: City | null;
   private role: UserRole;
+  private resetPasswordToken: string | null;
+  private resetPasswordExpiresAt: Date | null;
 
   private constructor(
     uuid: string,
@@ -34,6 +36,8 @@ export class User {
     deletedAt: Date | null,
     city: City | null,
     role: UserRole,
+    resetPasswordToken?: string | null,
+    resetPasswordExpiresAt?: Date | null,
   ) {
     this.uuid = uuid;
     this.email = email;
@@ -47,6 +51,8 @@ export class User {
     this.deletedAt = deletedAt;
     this.city = city;
     this.role = role;
+    this.resetPasswordToken = resetPasswordToken ?? null;
+    this.resetPasswordExpiresAt = resetPasswordExpiresAt ?? null;
   }
 
   public static create(
@@ -94,6 +100,8 @@ export class User {
       param.deletedAt,
       param.city,
       param.role,
+      param.resetPasswordToken ?? null,
+      param.resetPasswordExpiresAt ?? null,
     );
   }
   public registerNewRefreshToken(newRefreshToken: string): void {
@@ -108,6 +116,16 @@ export class User {
   }
   public changePassword(newPassword: string): void {
     this.password = newPassword;
+    this.updatedAt = new Date();
+  }
+  public generateResetPasswordToken(token: string, expirationDate: Date): void {
+    this.resetPasswordToken = token;
+    this.resetPasswordExpiresAt = expirationDate;
+    this.updatedAt = new Date();
+  }
+  public consumeResetPasswordToken(): void {
+    this.resetPasswordToken = null;
+    this.resetPasswordExpiresAt = null;
     this.updatedAt = new Date();
   }
   public getUuid(): string {
@@ -142,6 +160,12 @@ export class User {
   }
   public getDeletedAt(): Date | null {
     return this.deletedAt;
+  }
+  public getResetPasswordToken(): string | null {
+    return this.resetPasswordToken;
+  }
+  public getResetPasswordExpiresAt(): Date | null {
+    return this.resetPasswordExpiresAt;
   }
   public getCity(): City | null {
     return this.city;

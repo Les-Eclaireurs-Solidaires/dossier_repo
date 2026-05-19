@@ -53,6 +53,8 @@ CREATE TABLE IF NOT EXISTS `user` (
     user_created_at DATETIME NOT NULL,
     user_updated_at DATETIME,
     user_deleted_at DATETIME,
+    user_reset_password_token VARCHAR(255) NULL,
+    user_reset_password_expires_at DATETIME NULL,
     id_city INTEGER NULL,
     id_role INTEGER NOT NULL,
     PRIMARY KEY (user_id),

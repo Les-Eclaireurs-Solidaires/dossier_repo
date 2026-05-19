@@ -10,4 +10,5 @@ export interface IUserRepository {
   ): Promise<User | null>;
   insertUser(user: User): Promise<User>;
   updateUser(user: User): Promise<User>;
+  findByResetPasswordToken(token: string): Promise<User | null>;
 }
