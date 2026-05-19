@@ -1,0 +1,58 @@
+<header class="navbar">
+  <div class="navbar-container">
+    
+    <a routerLink="/" class="brand">
+      <div class="logo-placeholder">ES</div>
+      <span class="site-title">Éclaireurs Solidaires</span>
+    </a>
+
+    <div class="search-bar desktop-only">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Trouver une Mission" class="search-input">
+    </div>
+
+    <nav class="nav-actions">
+      
+      @if (!isAuthenticated()) {
+        <button class="btn-outline desktop-only" [routerLink]="['/login']">Mon Compte</button>
+        
+        <button class="mobile-toggle mobile-only" (click)="toggleMobileMenu()" aria-label="Menu">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      }
+
+      @else {
+        <div class="user-menu-wrapper">
+          <button class="avatar-btn" (click)="toggleUserMenu()">
+            <div class="avatar-placeholder">👤</div>
+          </button>
+          
+          @if (isUserMenuOpen()) {
+            <div class="dropdown-menu">
+              <a routerLink="/profile" class="dropdown-item">Mon Profil</a>
+              <a routerLink="/dashboard" class="dropdown-item">Tableau de Bord</a>
+              <hr>
+              <button (click)="logout()" class="dropdown-item logout-btn">
+                <span class="logout-icon">⏻</span> Déconnexion
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </nav>
+  </div>
+
+  @if (!isAuthenticated() && isMobileMenuOpen()) {
+    <div class="mobile-dropdown mobile-only">
+      <div class="search-bar search-bar-mobile">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Trouver une Mission" class="search-input">
+      </div>
+      <button class="btn-primary" [routerLink]="['/login']" (click)="toggleMobileMenu()">Mon Compte</button>
+    </div>
+  }
+</header>

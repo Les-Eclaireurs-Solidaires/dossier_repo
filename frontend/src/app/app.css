@@ -1,28 +1,28 @@
-/* Structure commune du Toast */
 .native-snackbar {
+  width: 75%;
   position: fixed;
   top: 24px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
   color: #ffffff;
   padding: 14px 24px;
-  border-radius: 50px; /* Style pilule assorti à tes maquettes d'inputs */
+  border-radius: 50px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
   font-weight: 500;
   transition: all 0.3s ease;
 }
 
-/* Couleurs dynamiques */
 .success-snackbar {
-  background-color: #10b981; /* Joli vert émeraude */
+  background-color: #10b981;
 }
 
 .error-snackbar {
-  background-color: #ef4444; /* Joli rouge corail */
+  background-color: #ef4444;
 }
 
 .native-snackbar button {

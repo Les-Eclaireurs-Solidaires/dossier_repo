@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { RegisterComponent } from './register.component';
 import { AuthStateService } from '../../services/authentication/auth-state.service';
 import { NotificationService } from '../../services/notification.service';
-import { IAuthResponse } from '../../interfaces/IAuthResponse';
+import { IUserIdentity } from '../../models/IUserIdentity';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -17,7 +17,7 @@ describe('RegisterComponent', () => {
   let mockActivatedRoute: any;
 
   beforeEach(async () => {
-    const mockAuthResponse: IAuthResponse = {
+    const mockAuthResponse: IUserIdentity = {
       uuid: '123e4567-e89b-12d3-a456-426614174000',
       email: 'test@test.com',
       role: 3,
@@ -59,20 +59,11 @@ describe('RegisterComponent', () => {
     expect(component.registerForm.valid).toBeFalsy();
   });
 
-  // --- À TOI DE JOUER POUR LA SUITE ---
-
   it('devrait rendre le formulaire valide si tous les champs sont correctement remplis', () => {
-    // Ton objectif :
-    // 1. Remplir component.registerForm.controls['email'].setValue('...') etc.
-    // 2. Vérifier que expect(component.registerForm.valid).toBeTruthy()
+    
   });
 
   it("devrait appeler le service et rediriger lors d'une soumission valide", () => {
-    // Ton objectif :
-    // 1. Remplir le formulaire avec des données valides.
-    // 2. Appeler component.onSubmit()
-    // 3. Vérifier que mockAuthStateService.register a été appelé avec les bonnes données (expect(...).toHaveBeenCalledWith(...))
-    // 4. Vérifier que mockNotificationService.showSuccess a été appelé
-    // 5. Vérifier que mockRouter.navigate a été appelé vers ['/']
+    
   });
 });

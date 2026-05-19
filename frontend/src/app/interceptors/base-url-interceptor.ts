@@ -1,5 +1,5 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject, PLATFORM_ID } from '@angular/core';
+import { inject, PLATFORM_ID, REQUEST } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { environment } from '../../environment/environment';
 
@@ -10,10 +10,18 @@ export const baseUrlInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.url.startsWith('/api') || req.url.startsWith('/auth')) {
     const baseUrl = isServer ? environment.apiUrlServer : environment.apiUrlClient;
     let headers = req.headers;
+    if (isServer) {
+      const serverRequest = inject(REQUEST, { optional: true }) as any;
+      const cookie = serverRequest?.headers?.get?.('cookie') || serverRequest?.headers?.cookie;
 
+      if (cookie) {
+        headers = headers.set('cookie', cookie);
+      }
+    }
     const apiReq = req.clone({
       url: `${baseUrl}${req.url}`,
       headers,
+      withCredentials: true,
     });
 
     return next(apiReq);

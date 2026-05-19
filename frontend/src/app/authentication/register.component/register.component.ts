@@ -3,8 +3,8 @@ import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthStateService } from '../../services/authentication/auth-state.service';
-import { NotificationService } from '../../services/notification.service';
 import { matchFieldsValidator } from '../../shared/validators/passwordMatchValidator';
+import { RegisterRequest } from '../../models/RegisterRequest';
 
 @Component({
   selector: 'app-register',
@@ -15,10 +15,9 @@ import { matchFieldsValidator } from '../../shared/validators/passwordMatchValid
 export class RegisterComponent {
   private authStateService = inject(AuthStateService);
   private router = inject(Router);
-  private notificationService = inject(NotificationService);
   private route = inject(ActivatedRoute);
 
-  public currentRole = signal<string>('');
+  public currentRole = signal<string>('bénévole');
 
   registerForm: FormGroup = new FormGroup(
     {
@@ -35,7 +34,7 @@ export class RegisterComponent {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const roleParam = params['role'];
-      if (roleParam === 'organizer') {
+      if (roleParam === 'ORGANIZER') {
         this.currentRole.set('organisateur');
       } else {
         this.currentRole.set('bénévole');
@@ -51,7 +50,7 @@ export class RegisterComponent {
 
     const { email, password } = this.registerForm.value;
 
-    const payload = {
+    const payload: RegisterRequest = {
       email,
       password,
       role: this.currentRole() === 'organisateur' ? 'ORGANIZER' : 'VOLUNTEER',
@@ -59,10 +58,8 @@ export class RegisterComponent {
 
     this.authStateService.register(payload).subscribe({
       next: () => {
-        this.notificationService.showSuccess('Compte créé, vous êtes maintenant connecté !');
         this.router.navigate(['/']);
       },
-      error: (error) => this.notificationService.showError(error.message),
     });
   }
 }
