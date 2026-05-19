@@ -14,9 +14,16 @@ import { LoginDTO } from "../dto/auth/LoginDTO.js";
 import { requireAuth } from "../middlewares/AuthMiddleware.js";
 import { UnauthenticatedError } from "../exceptions/AppError.js";
 import { UserMapper } from "../models/user/UserMapper.js";
+import rateLimit from "express-rate-limit";
 
 export class AuthController {
   private authRouter: Router = Router();
+  
+    private authLimiter = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      limit:10,
+      message: "Trop de tentatives. Veuillez réessayer plus tard.",
+    });
 
   constructor(
     private authService: AuthService,
@@ -28,8 +35,8 @@ export class AuthController {
     return this.authRouter;
   }
   private initializeRoutes(): void {
-    this.authRouter.post("/register", validateBody(RegisterDTO), this.register);
-    this.authRouter.post("/login", validateBody(LoginDTO), this.login);
+    this.authRouter.post("/register",this.authLimiter, validateBody(RegisterDTO), this.register);
+    this.authRouter.post("/login",this.authLimiter, validateBody(LoginDTO), this.login);
     this.authRouter.post(
       "/logout",
       requireAuth(this.tokenService),
@@ -41,8 +48,8 @@ export class AuthController {
       this.getCurrentUser,
     );
     this.authRouter.post("/refresh", this.refresh);
-    this.authRouter.post("/forgot-password", this.forgotPassword);
-    this.authRouter.post("/reset-password", this.resetPassword);
+    this.authRouter.post("/forgot-password",this.authLimiter, this.forgotPassword);
+    this.authRouter.post("/reset-password",this.authLimiter, this.resetPassword);
   }
   private register = async (
     req: Request,

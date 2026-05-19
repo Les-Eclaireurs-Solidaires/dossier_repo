@@ -69,10 +69,6 @@ export class AppConfig {
   }
 
   private initializeRoutes() {
-    const authLimiter = rateLimit({
-      windowMs: 15 * 60 * 1000,
-      limit: 10,
-    });
     this.app.get("/api", (req, res) => {
       res.json({ message: "Hello les Eclaireurs !" });
     });
@@ -81,7 +77,7 @@ export class AppConfig {
       swaggerUi.serve,
       swaggerUi.setup(this.swaggerDocument),
     );
-    this.app.use("/auth", authLimiter, this.authController.getRouter());
+    this.app.use("/auth", this.authController.getRouter());
   }
 
   private initializeErrorHandling() {
