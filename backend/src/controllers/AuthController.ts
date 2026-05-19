@@ -24,11 +24,9 @@ export class AuthController {
   ) {
     this.initializeRoutes();
   }
-
   public getRouter(): Router {
     return this.authRouter;
   }
-
   private initializeRoutes(): void {
     this.authRouter.post("/register", validateBody(RegisterDTO), this.register);
     this.authRouter.post("/login", validateBody(LoginDTO), this.login);
@@ -43,6 +41,8 @@ export class AuthController {
       this.getCurrentUser,
     );
     this.authRouter.post("/refresh", this.refresh);
+    this.authRouter.post("/forgot-password", this.forgotPassword);
+    this.authRouter.post("/reset-password", this.resetPassword);
   }
   private register = async (
     req: Request,
@@ -143,4 +143,23 @@ export class AuthController {
       maxAge: 15 * 60 * 1000,
     });
   }
+  private forgotPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { email } = req.body;
+    await this.authService.forgotPassword(email);
+    
+    return res.status(200).json({ message: "Email sent" });
+  };
+  private resetPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { token, password } = req.body;
+    await this.authService.resetPassword(token, password);
+    return res.status(200).json({ message: "Password reset" });
+  };
 }

@@ -9,7 +9,11 @@ import {
 } from "../exceptions/DomainError.js";
 import { User } from "../models/user/User.js";
 import { UserRole } from "../models/user/UserRoleEnum.js";
-import { UnauthenticatedError } from "../exceptions/AppError.js";
+import {
+  InvalidDateResetPasswordTokenError,
+  InvalidResetPasswordTokenError,
+  UnauthenticatedError,
+} from "../exceptions/AppError.js";
 
 export class AuthService {
   constructor(
@@ -99,7 +103,7 @@ export class AuthService {
     if (!isUpdated) throw new UserNotFoundError();
 
     const response: AuthResponse = {
-      accessToken : accessToken,
+      accessToken: accessToken,
       refreshToken: refreshToken,
       user: {
         uuid: user.getUuid(),
@@ -176,5 +180,41 @@ export class AuthService {
     };
 
     return response;
+  }
+  public async forgotPassword(email: string): Promise<void> {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      // On s'arrête silencieusement pour pas donner d'info sur l'existence des emails
+      return;
+    }
+
+    const token = this.tokenService.generateRandomToken();
+    const expirationDate = new Date(Date.now() + 15 * 60 * 1000);
+    user.generateResetPasswordToken(token, expirationDate);
+
+    const urlToSend = "http://localhost:4200/reset-password?token=" + token;
+    console.log(urlToSend);
+
+    await this.userRepository.updateUser(user);
+  }
+  public async resetPassword(token: string, password: string): Promise<void> {
+    const user = await this.userRepository.findByResetPasswordToken(token);
+    if (!user) {
+      throw new InvalidResetPasswordTokenError();
+    }
+    if (user.getResetPasswordToken() != token)
+      throw new InvalidResetPasswordTokenError();
+
+    const expireResetPasswordToken = user.getResetPasswordExpiresAt();
+    if (!expireResetPasswordToken) {
+      throw new InvalidResetPasswordTokenError();
+    }
+    if (expireResetPasswordToken < new Date()) {
+      throw new InvalidDateResetPasswordTokenError();
+    }
+    const hashedPassword = await this.hashService.hashString(password);
+    user.changePassword(hashedPassword);
+    user.consumeResetPasswordToken();
+    await this.userRepository.updateUser(user);
   }
 }

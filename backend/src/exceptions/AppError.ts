@@ -8,7 +8,7 @@ export abstract class AppError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
-export class EnvironmentVariableError extends AppError{
+export class EnvironmentVariableError extends AppError {
   constructor(message: string) {
     super(message, 500);
   }
@@ -39,3 +39,16 @@ export class CSRFError extends AppError {
     super(`Erreur de protection CSRF.`, 403);
   }
 }
+export class InvalidResetPasswordTokenError extends AppError {
+  constructor() {
+    super(
+      `Erreur de récupération du token de réinitialisation de mot de passe.`,
+    );
+  }
+}
+export class InvalidDateResetPasswordTokenError extends AppError {
+  constructor() {
+    super(`Token de réinitialisation de mot de passe expiré.`);
+  }
+}
+
