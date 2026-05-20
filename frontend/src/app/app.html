@@ -1,3 +1,16 @@
-<div>
-  {{title()}}
+ <app-nav-menu></app-nav-menu>
+@if (notificationService.snackbarMessage(); as message) {
+  <div
+    class="native-snackbar"
+    [class.success-snackbar]="notificationService.snackbarType() === 'success'"
+    [class.error-snackbar]="notificationService.snackbarType() === 'error'"
+  >
+    <span>{{ message }}</span>
+    <button (click)="notificationService.snackbarMessage.set(null)">Fermer</button>
+  </div>
+}
+<div class="app-content">
+  <router-outlet></router-outlet>
 </div>
+
+<!--   <app-footer></app-footer> -->

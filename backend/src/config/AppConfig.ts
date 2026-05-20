@@ -1,22 +1,33 @@
-import dotenv from "dotenv";
-dotenv.config({ path: ".env" });
-
 import cookieParser from "cookie-parser";
 import express, { type Express } from "express";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
 import helmet from "helmet";
 import type { Server } from "http";
+import { CorsError } from "../exceptions/AppError.js";
+import { errorHandler } from "../middlewares/ErrorMiddleware.js";
+import path from "node:path";
+import fs from "node:fs";
+import type { AuthController } from "../controllers/AuthController.js";
+import rateLimit from "express-rate-limit";
 
 export class AppConfig {
   private app: Express;
   private port: number;
   private host: string;
   private server?: Server;
+  private swaggerDocument: any;
 
-  constructor() {
+  constructor(private authController: AuthController) {
     this.app = express();
-    this.port = parseInt(process.env.BACKEND_PORT as string) || 3000;
+    this.port = process.env.BACKEND_PORT
+      ? parseInt(process.env.BACKEND_PORT as string)
+      : 3000;
     this.host = process.env.BACKEND_HOST || "0.0.0.0";
+
+    this.swaggerDocument = JSON.parse(
+      fs.readFileSync(path.resolve(process.cwd(), "./swagger.json"), "utf8"),
+    );
 
     this.initializeMiddlewares();
     this.initializeRoutes();
@@ -24,13 +35,18 @@ export class AppConfig {
   }
 
   private initializeMiddlewares() {
+    const limiter = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      limit: 2000,
+    });
+    // Confiance au proxy 
+    this.app.set('trust proxy', 1);
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(helmet());
     this.app.use(
       cors({
         origin: (origin, callback) => {
-          // Ports of communicate Front-End
           const allowed = [
             "http://localhost:4200",
             "http://localhost:4000",
@@ -39,7 +55,7 @@ export class AppConfig {
           if (!origin || allowed.includes(origin)) {
             callback(null, true);
           } else {
-            callback(new Error("Not allowed by CORS"));
+            callback(new CorsError());
           }
         },
         credentials: true,
@@ -48,6 +64,7 @@ export class AppConfig {
         exposedHeaders: ["X-XSRF-TOKEN"],
       }),
     );
+    this.app.use(limiter);
     this.app.use(cookieParser());
   }
 
@@ -55,9 +72,17 @@ export class AppConfig {
     this.app.get("/api", (req, res) => {
       res.json({ message: "Hello les Eclaireurs !" });
     });
+    this.app.use(
+      "/api-docs",
+      swaggerUi.serve,
+      swaggerUi.setup(this.swaggerDocument),
+    );
+    this.app.use("/auth", this.authController.getRouter());
   }
 
-  private initializeErrorHandling() {}
+  private initializeErrorHandling() {
+    this.app.use(errorHandler);
+  }
 
   public listen() {
     this.server = this.app.listen(this.port, this.host, () => {
