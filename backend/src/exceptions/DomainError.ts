@@ -40,11 +40,16 @@ export class ZipNotEmptyError extends DomainError {
 } 
 export class UserCredentialsError extends DomainError {
   constructor() {
-    super("Email ou mot de passe incorrect", 403);
+    super("Email ou mot de passe incorrect", 401);
   }
 }
 export class UserNotFoundError extends DomainError {
   constructor() {
     super("Utilisateur introuvable", 404);
+  }
+}
+export class UpdatedFailedError extends DomainError {
+  constructor() {
+    super("L'utilisateur n'a pas pu être mis à jour", 500);
   }
 }

@@ -4,6 +4,7 @@ import type { IHashService } from "../models/authentication/interfaces/IHashServ
 import type { ITokenService } from "../models/authentication/interfaces/ITokenService.js";
 import {
   EmailAlreadyExistError,
+  UpdatedFailedError,
   UserCredentialsError,
   UserNotFoundError,
 } from "../exceptions/DomainError.js";
@@ -100,7 +101,7 @@ export class AuthService {
     user.registerNewRefreshToken(hashedRefreshToken);
 
     const isUpdated = await this.userRepository.updateUser(user);
-    if (!isUpdated) throw new UserNotFoundError();
+    if (!isUpdated) throw new UpdatedFailedError();
 
     const response: AuthResponse = {
       accessToken: accessToken,
@@ -134,7 +135,7 @@ export class AuthService {
 
     const user = await this.userRepository.findByUuid(payload.uuid);
     if (!user) {
-      throw new UserNotFoundError();
+      throw new UserCredentialsError();
     }
     const userRefreshToken = user.getRefreshToken();
     if (userRefreshToken === null) {
@@ -167,7 +168,7 @@ export class AuthService {
     user.registerNewRefreshToken(hashedRefreshToken);
 
     const isUpdated = await this.userRepository.updateUser(user);
-    if (!isUpdated) throw new UserNotFoundError();
+    if (!isUpdated) throw new UpdatedFailedError();
 
     const response: AuthResponse = {
       accessToken,

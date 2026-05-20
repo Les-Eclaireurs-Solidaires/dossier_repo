@@ -256,7 +256,6 @@ describe("AuthService", () => {
       expect(mockUserRepository.findByUuid).toHaveBeenCalledWith("123-uuid");
     });
   });
-
   describe("getCurrentUser()", () => {
     it("should return the corresponding User entity for a given UUID", async () => {
       const mockUser = {
@@ -282,5 +281,9 @@ describe("AuthService", () => {
 
       expect(mockUserRepository.findByUuid).toHaveBeenCalledWith("123-uuid");
     });
+  });
+  describe("forgotPassword()", () => {
+  });
+  describe("resetPassword()", () => {
   });
 });
