@@ -40,7 +40,6 @@ export class LoginComponent {
 
     this.authStateService.login(payload).subscribe({
       next: () => {
-        this.notificationService.showSuccess('Vous êtes maintenant connecté !');
         this.router.navigate(['/']);
       },
       error: (error) => this.notificationService.showError(error.message),

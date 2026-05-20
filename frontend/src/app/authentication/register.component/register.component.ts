@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthStateService } from '../../services/authentication/auth-state.service';
 import { matchFieldsValidator } from '../../shared/validators/passwordMatchValidator';
@@ -8,7 +8,7 @@ import { RegisterRequest } from '../../models/RegisterRequest';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule,RouterLink],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
@@ -33,7 +33,7 @@ export class RegisterComponent {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      const roleParam = params['role'];
+      const roleParam = params['role']?.toUpperCase();
       if (roleParam === 'ORGANIZER') {
         this.currentRole.set('organisateur');
       } else {

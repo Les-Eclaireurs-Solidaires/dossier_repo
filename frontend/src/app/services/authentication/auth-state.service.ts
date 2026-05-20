@@ -6,6 +6,8 @@ import { LoginRequest } from '../../models/LoginRequest';
 import { NotificationService } from '../notification.service';
 import { RegisterRequest } from '../../models/RegisterRequest';
 import { IUserProfile } from '../../models/IUserProfile';
+import { HttpErrorResponse } from '@angular/common/http';
+import e from 'express';
 
 @Injectable({
   providedIn: 'root',
@@ -36,9 +38,11 @@ export class AuthStateService {
         this.updateState(authData);
         this.notificationService.showSuccess('Registration successful');
       }),
-      catchError((err) => {
+      catchError((err:HttpErrorResponse) => {
         this.updateState(null);
-        this.notificationService.showError('Registration failed');
+        const errorMessage = err.error?.message || 'Registration failed';
+        
+        this.notificationService.showError(errorMessage);
         return throwError(() => err);
       }),
     );
@@ -52,7 +56,8 @@ export class AuthStateService {
       }),
       catchError((err) => {
         this.updateState(null);
-        this.notificationService.showError('Invalid credentials');
+        const errorMessage = err.error?.message || 'Invalid credentials';
+        this.notificationService.showError(errorMessage);
         return throwError(() => err);
       }),
     );

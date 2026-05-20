@@ -45,6 +45,8 @@ describe('RegisterComponent', () => {
       ],
     }).compileComponents();
 
+    mockActivatedRoute.queryParams = of({ role: 'organizer' });
+
     fixture = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -59,11 +61,7 @@ describe('RegisterComponent', () => {
     expect(component.registerForm.valid).toBeFalsy();
   });
 
-  it('devrait rendre le formulaire valide si tous les champs sont correctement remplis', () => {
-    
-  });
+  it('devrait rendre le formulaire valide si tous les champs sont correctement remplis', () => {});
 
-  it("devrait appeler le service et rediriger lors d'une soumission valide", () => {
-    
-  });
+  it("devrait appeler le service et rediriger lors d'une soumission valide", () => {});
 });
